@@ -1,16 +1,18 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = '/api/auth';
+const API_URL = "/api/auth";
+
+const BACKEND_URL = "https://user-management-system-ashy-ten.vercel.app";
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: BACKEND_URL + API_URL,
 });
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
-      config.headers['Authorization'] = `Bearer ${token}`;
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
@@ -21,43 +23,42 @@ api.interceptors.request.use(
 
 export const authService = {
   register: async (userData) => {
-    const response = await api.post('/register', userData);
+    const response = await api.post("/register", userData);
     return response.data;
   },
 
   login: async (credentials) => {
-    const response = await api.post('/login', credentials);
+    const response = await api.post("/login", credentials);
     if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
+      localStorage.setItem("token", response.data.token);
     }
     return response.data;
   },
 
   getAllUsers: async () => {
-    const response = await api.get('/users');
+    const response = await api.get("/users");
     return response.data;
   },
 
   updateUserStatus: async (userIds, status) => {
-    const response = await api.put('/users/status', { userIds, status });
+    const response = await api.put("/users/status", { userIds, status });
     return response.data;
   },
 
   deleteUsers: async (userIds) => {
-    const response = await api.delete('/users', { data: { userIds } });
+    const response = await api.delete("/users", { data: { userIds } });
     return response.data;
   },
 
   logout: () => {
-    localStorage.removeItem('token');
-  }
+    localStorage.removeItem("token");
+  },
 };
-
 
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('API Error:', error.response?.data);
+    console.error("API Error:", error.response?.data);
     return Promise.reject(error);
   }
 );
